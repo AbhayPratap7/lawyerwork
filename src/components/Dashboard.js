@@ -16,6 +16,9 @@ const Dashboard = () => {
     id: '', date: '', client: '', partner: '', task: '', closing: ''
   });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const appointmentsPerPage = 13;
+
   useEffect(() => {
     const loadAppointments = () => {
       try {
@@ -73,6 +76,17 @@ const Dashboard = () => {
     console.log('Deleted appointment, remaining:', updatedAppointments);
   };
 
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const indexOfLastAppointment = currentPage * appointmentsPerPage;
+  const indexOfFirstAppointment = indexOfLastAppointment - appointmentsPerPage;
+  const currentAppointments = appointments.slice(indexOfFirstAppointment, indexOfLastAppointment);
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(appointments.length / appointmentsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
   return (
     <div className="dashboard">
       <aside className="sidebar">
@@ -104,7 +118,7 @@ const Dashboard = () => {
         <Routes>
           <Route path="/" element={
             <AppointmentList
-              appointments={appointments}
+              appointments={currentAppointments}
               showAddForm={showAddForm}
               setShowAddForm={setShowAddForm}
               newAppointment={newAppointment}
@@ -116,6 +130,9 @@ const Dashboard = () => {
               editAppointment={editAppointment}
               setEditAppointment={setEditAppointment}
               handleUpdateAppointment={handleUpdateAppointment}
+              currentPage={currentPage}
+              pageNumbers={pageNumbers}
+              paginate={paginate}
             />
           } />
           {/* Add other routes here */}
@@ -137,7 +154,10 @@ const AppointmentList = ({
   isEditing,
   editAppointment,
   setEditAppointment,
-  handleUpdateAppointment
+  handleUpdateAppointment,
+  currentPage,
+  pageNumbers,
+  paginate
 }) => {
   return (
     <div className="appointment-list">
@@ -152,13 +172,11 @@ const AppointmentList = ({
           <button>🔍</button>
         </div>
         <div className="pagination">
-          <span>◀</span>
-          <span>1</span>
-          <span>2</span>
-          <span className="active">3</span>
-          <span>...</span>
-          <span>10</span>
-          <span>▶</span>
+          {pageNumbers.map(number => (
+            <span key={number} onClick={() => paginate(number)} className={currentPage === number ? 'active' : ''}>
+              {number}
+            </span>
+          ))}
         </div>
       </div>
       {showAddForm && (
