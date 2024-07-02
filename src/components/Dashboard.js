@@ -5,7 +5,10 @@ import Employee from './Employee';
 
 const Dashboard = () => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState(() => {
+    const savedAppointments = localStorage.getItem('appointments');
+    return savedAppointments ? JSON.parse(savedAppointments) : [];
+  });
   const [showAddForm, setShowAddForm] = useState(false);
   const [newAppointment, setNewAppointment] = useState({ id: '', date: '', client: '', partner: '', task: '', closing: '' });
 
@@ -17,29 +20,7 @@ const Dashboard = () => {
   const appointmentsPerPage = 13;
 
   useEffect(() => {
-    const loadAppointments = () => {
-      try {
-        const storedAppointments = localStorage.getItem('appointments');
-        if (storedAppointments) {
-          const parsedAppointments = JSON.parse(storedAppointments);
-          console.log('Loaded appointments:', parsedAppointments);
-          setAppointments(parsedAppointments);
-        }
-      } catch (error) {
-        console.error('Error loading appointments:', error);
-      }
-    };
-
-    loadAppointments();
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('appointments', JSON.stringify(appointments));
-      console.log('Saved appointments:', appointments);
-    } catch (error) {
-      console.error('Error saving appointments:', error);
-    }
+    localStorage.setItem('appointments', JSON.stringify(appointments));
   }, [appointments]);
 
   const handleAddAppointment = () => {
@@ -48,7 +29,6 @@ const Dashboard = () => {
     setAppointments(updatedAppointments);
     setNewAppointment({ id: '', date: '', client: '', partner: '', task: '', closing: '' });
     setShowAddForm(false);
-    console.log('Added appointment:', updatedAppointments);
   };
 
   const handleEditAppointment = (index) => {
@@ -62,13 +42,11 @@ const Dashboard = () => {
     setAppointments(updatedAppointments);
     setIsEditing(false);
     setEditAppointment({ id: '', date: '', client: '', partner: '', task: '', closing: '' });
-    console.log('Updated appointments:', updatedAppointments);
   };
 
   const handleDeleteAppointment = (index) => {
     const updatedAppointments = appointments.filter((_, i) => i !== index);
     setAppointments(updatedAppointments);
-    console.log('Deleted appointment, remaining:', updatedAppointments);
   };
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -90,7 +68,7 @@ const Dashboard = () => {
           <ul>
             {['Dashboard', 'Employee', 'Matter', 'Time sheet', 'Client', 'Document', 'Invoice', 'Receipt', 'Expanse', 'Report'].map((item) => (
               <li key={item}>
-                <Link to={`/${item.toLowerCase().replace(' ', '-')}`}>{item}</Link>
+                <Link to={`/${item.toLowerCase().replace(' ', '-')}`} className={item === 'Dashboard' ? 'active' : ''}>{item}</Link>
               </li>
             ))}
           </ul>
