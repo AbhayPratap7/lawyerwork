@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
 import './Dashboard.css';
+import Employee from './Employee';
 
 const Dashboard = () => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newAppointment, setNewAppointment] = useState({
-    id: '', date: '', client: '', partner: '', task: '', closing: ''
-  });
+  const [newAppointment, setNewAppointment] = useState({ id: '', date: '', client: '', partner: '', task: '', closing: '' });
 
   const [isEditing, setIsEditing] = useState(false);
   const [currentEditIndex, setCurrentEditIndex] = useState(null);
-  const [editAppointment, setEditAppointment] = useState({
-    id: '', date: '', client: '', partner: '', task: '', closing: ''
-  });
+  const [editAppointment, setEditAppointment] = useState({ id: '', date: '', client: '', partner: '', task: '', closing: '' });
 
   const [currentPage, setCurrentPage] = useState(1);
   const appointmentsPerPage = 13;
@@ -61,9 +58,7 @@ const Dashboard = () => {
   };
 
   const handleUpdateAppointment = () => {
-    const updatedAppointments = appointments.map((appointment, index) => 
-      index === currentEditIndex ? editAppointment : appointment
-    );
+    const updatedAppointments = appointments.map((appointment, index) => index === currentEditIndex ? editAppointment : appointment);
     setAppointments(updatedAppointments);
     setIsEditing(false);
     setEditAppointment({ id: '', date: '', client: '', partner: '', task: '', closing: '' });
@@ -135,7 +130,7 @@ const Dashboard = () => {
               paginate={paginate}
             />
           } />
-          {/* Add other routes here */}
+          <Route path="/employee" element={<Employee />} />
         </Routes>
       </main>
     </div>
@@ -225,8 +220,8 @@ const AppointmentList = ({
               <td>{appointment.task}</td>
               <td>{appointment.closing}</td>
               <td>
-                <button onClick={() => handleEditAppointment(index)}>✏️</button>
-                <button onClick={() => handleDeleteAppointment(index)}>🗑️</button>
+                <button onClick={() => handleEditAppointment(index)}>Edit</button>
+                <button onClick={() => handleDeleteAppointment(index)}>Delete</button>
               </td>
             </tr>
           ))}
